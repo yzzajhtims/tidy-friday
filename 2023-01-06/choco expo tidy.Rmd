@@ -16,15 +16,15 @@ library(tidyr)
 library(dplyr)
 library(stringr)
 
-top_chara = chocolate |>
-    mutate(in_chara = strsplit(as.character(most_memorable_characteristics), ",")) |>
-    unnest(in_chara) |>
-    mutate(in_chara = str_trim(in_chara)) |>
-    select(ref, in_chara) |>
-    group_by(in_chara) |>
-    summarise(count = n(), percent =  count/nrow(chocolate) * 100 ) |>
-    ungroup() |>
-    arrange(-count) 
+top_chara = chocolate |> # "coco, lemon, sweet, bitter"
+    mutate(in_chara = strsplit(as.character(most_memorable_characteristics), ",")) |>  # c("coco"," lemon"," sweet"," bitter")
+    unnest(in_chara) |> # row for each "coco"," lemon"," sweet"," bitter"
+    mutate(in_chara = str_trim(in_chara)) |> # trim spaces from each row "coco","lemon","sweet","bitter"
+    select(ref, in_chara) |> # subselecting to view only two columns 
+    group_by(in_chara) |> #grouping by each of the previous terms "coco","lemon","sweet","bitter"
+    summarise(count = n(), percent =  count/nrow(chocolate) * 100 ) |> # calculating how many rows mention each of those terms 
+    ungroup() |> 
+    arrange(-count) # arranged by descending order 
 top_chara
 ```
 ```{r}
