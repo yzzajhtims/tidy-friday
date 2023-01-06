@@ -28,12 +28,14 @@ top_chara = chocolate |> # "coco, lemon, sweet, bitter"
 top_chara
 ```
 ```{r}
+# Asking for chocolates with lemon in their most mem. characteristics, what countries do they come from and by how much? 
+# In other words, which country produces the most lemon flavored chocolates?
 chocolate |>
-  filter(grepl("lemon", most_memorable_characteristics, fixed = TRUE)) |>
-  select(country_of_bean_origin, most_memorable_characteristics) |>
-  group_by(country_of_bean_origin) |>
+  filter(grepl("lemon", most_memorable_characteristics, fixed = TRUE)) |> #filtering rows with "lemon" in most_mem_chara; alt. use %LIKE% instead of grep
+  select(country_of_bean_origin, most_memorable_characteristics) |> #subselecting 2 columns
+  group_by(country_of_bean_origin) |> 
   summarise(count = n()) |>
-  arrange(-count)
+  arrange(-count) #find which country has the most counts 
 ```
 
 ```{r}
@@ -42,6 +44,7 @@ library(ggplot2)
 
 
 ```{r}
+#Create a bar chart with the top 5 countries of origin 
 chocolate |>
   group_by(country_of_bean_origin) |>
   summarise(count = n()) |>
@@ -51,6 +54,7 @@ chocolate |>
 ```
 
 ```{r}
+#Store the top 5 countries of origin 
 top_origin_countries = chocolate |>
   group_by(country_of_bean_origin) |>
   summarise(count = n()) |>
@@ -60,6 +64,7 @@ top_origin_countries = chocolate |>
 ```
 
 ```{r}
+#For the top 5 countries that supply cocoa, where are the manufactures of this chocolate? 
 chocolate |>
   filter(country_of_bean_origin %in% top_origin_countries) |>
   group_by(country_of_bean_origin, company_location) |>
