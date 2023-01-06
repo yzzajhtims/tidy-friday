@@ -1,0 +1,71 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+```{r}
+chocolate <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2022/2022-01-18/chocolate.csv')
+```
+
+```{r}
+chocolate |> 
+    group_by(most_memorable_characteristics) |>
+    summarise(memorable = n(),desc = TRUE)
+```
+```{r}
+library(tidyr)
+library(dplyr)
+library(stringr)
+
+top_chara = chocolate |>
+    mutate(in_chara = strsplit(as.character(most_memorable_characteristics), ",")) |>
+    unnest(in_chara) |>
+    mutate(in_chara = str_trim(in_chara)) |>
+    select(ref, in_chara) |>
+    group_by(in_chara) |>
+    summarise(count = n(), percent =  count/nrow(chocolate) * 100 ) |>
+    ungroup() |>
+    arrange(-count) 
+top_chara
+```
+```{r}
+chocolate |>
+  filter(grepl("lemon", most_memorable_characteristics, fixed = TRUE)) |>
+  select(country_of_bean_origin, most_memorable_characteristics) |>
+  group_by(country_of_bean_origin) |>
+  summarise(count = n()) |>
+  arrange(-count)
+```
+
+```{r}
+library(ggplot2)
+```
+
+
+```{r}
+chocolate |>
+  group_by(country_of_bean_origin) |>
+  summarise(count = n()) |>
+  arrange(-count) |>
+  head(5) |> 
+  ggplot(aes(country_of_bean_origin,count)) + geom_col() + theme_gray()
+```
+
+```{r}
+top_origin_countries = chocolate |>
+  group_by(country_of_bean_origin) |>
+  summarise(count = n()) |>
+  arrange(-count) |>
+  head(5) |>
+  pull(country_of_bean_origin)
+```
+
+```{r}
+chocolate |>
+  filter(country_of_bean_origin %in% top_origin_countries) |>
+  group_by(country_of_bean_origin, company_location) |>
+  summarise(count = n()) |>
+  arrange(-count) |>
+  ggplot(aes(x=country_of_bean_origin,y=count, fill=company_location)) + geom_col() + theme_gray()
+
+```
+
